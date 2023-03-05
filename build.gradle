@@ -25,6 +25,9 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //selenium
+    implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
 }
 
 tasks.named('test') {
