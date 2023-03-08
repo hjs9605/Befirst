@@ -13,9 +13,9 @@ import java.util.List;
 public class selenium {
     private WebDriver driver;
 
-    private static final String url = "";
+    private static final String url = "https://www.naver.com";
     public void process() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Desktop\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:/Users/sbl/IdeaProjects/BeFirst2/chromedriver.exe");
         //크롬 드라이버 셋팅 (드라이버 설치한 경로 입력)
 
         driver = new ChromeDriver();
