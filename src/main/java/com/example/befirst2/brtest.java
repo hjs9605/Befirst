@@ -14,7 +14,6 @@ import org.openqa.selenium.support.ui.WebDriverWait; // 명시적 대기 사용
 
 import java.lang.annotation.Target;
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
 
 @Component
