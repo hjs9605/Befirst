@@ -27,7 +27,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     //selenium
-    implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.8.1'
 }
 
 tasks.named('test') {
