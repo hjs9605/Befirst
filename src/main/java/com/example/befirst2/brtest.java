@@ -59,7 +59,7 @@ public class brtest  implements CommandLineRunner {
     private static final String URL_ct_main = "https://app.catchtable.co.kr/";
     private static final String BRSEO_id_kakao = "sbl1998@naver.com";
     private static final String BRSEO_password_kakao = "Hjs220801@*";
-    private static final String BRSEO_ChromeDriverDirectory ="C:\\Users\\sbl\\IdeaProjects\\BeFirst2\\chromedriver.exe";
+    private static final String BRSEO_ChromeDriverDirectory ="src/main/resources/chromedriver_brseo.exe";
     private static final String TargetRestaurant = "우정초밥";
     private String mainWindow;
 
@@ -105,8 +105,7 @@ public class brtest  implements CommandLineRunner {
         // 이제부터 카카오로그인 팝업창
 
         // 로그인 입력창이 클릭 가능할때 까지(be enabled) 명시적 대기
-        _WebDriverWait.until(ExpectedConditions.elementToBeClickable(_WebDriver.findElement(By.id("loginKey--1"))));
-        
+        _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("loginKey--1")));
         _WebDriver.findElement(By.id("loginKey--1")).sendKeys(BRSEO_id_kakao);
         _WebDriver.findElement(By.id("password--2")).sendKeys(BRSEO_password_kakao);
 
@@ -121,7 +120,7 @@ public class brtest  implements CommandLineRunner {
 
         try{
             _WebDriver.findElement(By.className("btn-close")).click();
-            _WebDriverWait.until(ExpectedConditions.elementToBeClickable(_WebDriver.findElement(By.className("btn-today-close"))));
+            _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btn-today-close")));
             _WebDriver.findElement(By.className("btn-today-close")).click();
         }
         catch(NoSuchElementException e){
@@ -136,7 +135,7 @@ public class brtest  implements CommandLineRunner {
 
         _Sleeper.sleep(Second(1));
 
-        _WebDriverWait.until(ExpectedConditions.elementToBeClickable(_WebDriver.findElement(By.className("searched-keyword-list-item"))));
+        _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("searched-keyword-list-item")));
         _WebDriver.findElement(By.className("searched-keyword-list-item")).click();
 
         //_WebDriver.findElement(By.)
