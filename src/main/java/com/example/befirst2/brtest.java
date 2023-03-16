@@ -60,12 +60,13 @@ public class brtest  implements CommandLineRunner {
     private static final String BRSEO_id_kakao = "sbl1998@naver.com";
     private static final String BRSEO_password_kakao = "Hjs220801@*";
     private static final String BRSEO_ChromeDriverDirectory ="src/main/resources/chromedriver_brseo.exe";
-    private static final String TargetRestaurant = "우정초밥";
+    private static final String TargetRestaurant = "램브란트 여의도점";
     private String mainWindow;
 
 
-
-
+    public String GetCalenderXPath(int row, int col){
+        return String.format("/html/body/div[4]/div[3]/div/div[1]/div[1]/div/div/div/div/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div/div[%d]/div[%d]/div/div", row+1, col);
+    }
     public void process() throws InterruptedException {
         ChromeOptions options = new ChromeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL); // 모든 페이지를 로드하냐 마냐 에 대한 설정인듯?
@@ -133,11 +134,12 @@ public class brtest  implements CommandLineRunner {
 
         _WebDriver.findElement(By.xpath("//*[@id=\"header\"]/div/form/input")).sendKeys(TargetRestaurant);
 
-        _Sleeper.sleep(Second(1));
-
         _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("searched-keyword-list-item")));
         _WebDriver.findElement(By.className("searched-keyword-list-item")).click();
 
+        // TODO: 2023-03-16 예약하기나 예약가능날짜찾기 버튼을 눌러서 time slot unavailable을 찾을 수 있는 지 검사 
+        
+        System.out.println(_WebDriver.findElement(By.className("time-slot-unavailable")).getAccessibleName());
         //_WebDriver.findElement(By.)
         // TODO
 
