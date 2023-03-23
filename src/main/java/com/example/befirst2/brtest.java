@@ -1,5 +1,4 @@
 package com.example.befirst2;
-
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -7,21 +6,18 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Sleeper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
 import org.openqa.selenium.support.ui.WebDriverWait; // 명시적 대기 사용
 
-import java.lang.annotation.Target;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.Scanner;
 
 @Component
 public class brtest  implements CommandLineRunner {
 
+    /**
+     * @implNote
+     * 현재 웹드라이버가 관리하는 윈도우 외의 모든 윈도우를 닫는다.
+     */
     public void closePopup(){
         Set<String> windows = _WebDriver.getWindowHandles();
         for(String window : windows){
@@ -47,26 +43,49 @@ public class brtest  implements CommandLineRunner {
         return false;
     }
 
+    /**
+     * @implNote 
+     * 오늘 날짜 클릭 후 다시 타겟 날짜 클릭
+     */
+    public void RefreshCatchTable(){
+        _WebDriver.findElement(By.xpath("//button[text() = '오늘']")).click();
+        _WebDriver.findElement(By.xpath(GetCalenderXPath(_TargetRow, _TargetCol))).click();
+    }
 
-    public void SetRowCols(int row, int col){
-        _TargetRow = row;
-        _TargetCol = col;
+    /**
+     * @implNote
+     * 예약하고싶은 날짜의 행 열 입력
+     */
+    public String GetCalenderXPath(int row, int col){
+        return String.format("/html/body/div[4]/div[3]/div/div[1]/div[1]/div/div/div/div/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div/div[%d]/div[%d]/div/div", row+1, col);
     }
 
     @Override
     public void run(String... args) throws Exception{
-
         Scanner scanner = new Scanner(System.in);
+        /**
+         * @implNote
+         * 자꾸 행열 입력해서 화났음 -병렬
+         */
+        boolean debugging = true;
 
-        System.out.println("캘린더 행 입력 : ");
-        int rowInput = scanner.nextInt();
-        System.out.println("캘린더 열 입력 : ");
-        int colInput = scanner.nextInt();
-
-        SetRowCols(rowInput, colInput);
+        if(debugging){
+            _TargetRow = 5;
+            _TargetCol = 6;
+            _TargetTime = "오후 7:00";
+        }
+        else {
+            System.out.println("캘린더 행 입력 : ");
+            _TargetRow = scanner.nextInt();
+            System.out.println("캘린더 열 입력 : ");
+            _TargetCol = scanner.nextInt();
+            System.out.println("원하는 시간 입력 **오전 7:15** ");
+            _TargetTime = scanner.nextLine();
+        }
         process();
     }
 
+    //region Params
     private WebDriver _WebDriver;
     private WebDriverWait _WebDriverWait;
     java.time.Duration Second(long sec){
@@ -78,26 +97,21 @@ public class brtest  implements CommandLineRunner {
     private static final String BRSEO_id_kakao = "sbl1998@naver.com";
     private static final String BRSEO_password_kakao = "Hjs220801@*";
     private static final String BRSEO_ChromeDriverDirectory ="src/main/resources/chromedriver_brseo.exe";
-    private static final String TargetRestaurant = "플레이버타운";
+    private static final String TargetRestaurant = "우정초밥";
     private String mainWindow;
     private int _TargetRow;
     private int _TargetCol;
+    private String _TargetTime;
+    //endregion
 
-
-    public String GetCalenderXPath(int row, int col){
-        return String.format("/html/body/div[4]/div[3]/div/div[1]/div[1]/div/div/div/div/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div/div[%d]/div[%d]/div/div", row+1, col);
-    }
     public void process() throws InterruptedException {
         ChromeOptions options = new ChromeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL); // 모든 페이지를 로드하냐 마냐 에 대한 설정인듯?
         options.addArguments("--remote-allow-origins=*"); // 원격 접속 허용
         System.setProperty("webdriver.chrome.driver", BRSEO_ChromeDriverDirectory);
 
-
         _WebDriver = new ChromeDriver(options);
-        // TODO Duration
-        _WebDriverWait = new WebDriverWait(_WebDriver, Second(1000));
-        //driver_spare = new ChromeDriver(options); // 웹을 하나 더 컨트롤해야한다면...
+        _WebDriverWait = new WebDriverWait(_WebDriver, Second(100));
 
         //브라우저 선택
         _WebDriver.get(URL_ct_login);
@@ -108,7 +122,6 @@ public class brtest  implements CommandLineRunner {
         _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("__kakao")));
         _WebDriver.findElement(By.className("__kakao")).click();
 
-        // 명시적 대기 구현  *너무 복잡하게한거같기도하고..
 
         boolean check = handlePopup();
         while(!check){
@@ -117,26 +130,16 @@ public class brtest  implements CommandLineRunner {
             }
             catch(InterruptedException e){
                 e.printStackTrace();
-                System.out.println("으안ㄹ미ㅓㅣㅏㄴㄹ어ㅣㄹ나어ㅣㅏㄴㅁㄹ어ㅣㅏㄴㅁㄹㅇ");
             }
             check = handlePopup();
         }
-
-        // 이제부터 카카오로그인 팝업창
-        //_Sleeper.sleep(Second(10));
-        // 로그인 입력창이 클릭 가능할때 까지(be enabled) 명시적 대기
+        
         _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("loginKey--1")));
         _WebDriver.findElement(By.id("loginKey--1")).sendKeys(BRSEO_id_kakao);
         _WebDriver.findElement(By.id("password--2")).sendKeys(BRSEO_password_kakao);
-
         _WebDriver.findElement(By.className("btn_g")).click();
-
-
         _WebDriver.switchTo().window(mainWindow);
-        //_WebDriverWait.until(ExpectedConditions.urlToBe(URL_ct_main));
-
-
-        _Sleeper.sleep(Second(4));
+        _Sleeper.sleep(Second(3));
 
         try{
             _WebDriver.findElement(By.className("btn-close")).click();
@@ -155,48 +158,40 @@ public class brtest  implements CommandLineRunner {
         _WebDriver.findElement(By.xpath("//*[@id=\"header\"]/div/form/input")).sendKeys(TargetRestaurant);
         _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("searched-keyword-list-item")));
         _WebDriver.findElement(By.className("searched-keyword-list-item")).click();
-
-
-
         _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btn-reservation")));
 
         // TODO: 2023-03-16 예약하기나 예약가능날짜찾기 버튼을 눌러서 time slot unavailable을 찾을 수 있는 지 검사
+
         _WebDriver.findElement(By.className("btn-reservation")).click();
-
         _Sleeper.sleep(Second(3));
-
-
         _WebDriver.findElement(By.xpath(GetCalenderXPath(_TargetRow, _TargetCol))).click();
-        List<WebElement> availableTimes =_WebDriver.findElements(By.className("timetable-list-item"));
 
-        System.out.println("전");
-        _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(text(), '오후 7:15')]")));
-        _WebDriver.findElement(By.xpath("//span[contains(text(),'오후 7:15')]")).click();
-        System.out.println("후");
+        boolean refreshing = true;
+        while(refreshing) {
+            try {
+                _WebDriver.findElement(By.xpath("//*[contains(text(), '예약이 모두 마감되었습니다.') or contains(text(), '온라인 예약을 받지 않는 날입니다.') or contains(text(), '빈자리 알림 신청') or contains(text(), '휴무일입니다.')]"));
+                System.out.println("큰일이야");
+                RefreshCatchTable();
 
-        //_WebDriver.findElement(By.)
+            } catch (NoSuchElementException e) {
+                System.out.println("테스트");
+            }
 
-        // 램브란트 여의도점 시간
-        //*[@id="scrollContainer_1679120502_805"]/div/div[1]/button[2]
+            try {
+                _WebDriver.findElement(By.xpath("//*[contains(text(), '예약 오픈 전입니다.')]"));
+                RefreshCatchTable();
+            } catch (NoSuchElementException e) {
+                System.out.println("테스트");
+            }
 
-        // 이건 머야
-        //*[@id="scrollContainer_1679120927_410"]/div/div[1]/a[1]
+            try {
+                _WebDriver.findElement(By.xpath(String.format("//span[contains(text(), %s)]", _TargetTime))).click();
+                System.out.println("테스트");
+            } catch (NoSuchElementException e) {
 
+            }
 
-        // 레스쁘아 뒈 뭐시꺵이 시간xpath
-        //*[@id="scrollContainer_1679396114_893"]/div/div[1]/button[2]
-
-
-        //포이 키친 시간xpath
-        //*[@id="scrollContainer_1679396333_411"]/div/div[1]/a[1]
-
-        //*[@id="scrollContainer_1679396380_13"]/div/div[1]/button[13]
-
-        //*[@id="scrollContainer_1679396682_546"]/div/div[1]/a[1]
-        // 가게마다 xpath가 상이한데 그 이유는시간 버튼 에 html문법상 상단에 있는 v-scroll 클래스의 id가 모두 다르게 할당이 되어있기 때문이다.
-        // v-scroll -> id 추출 -> xpath ?? 괜찮나,,
-//        driver.close();    //탭 닫기
-//        driver.quit();
+        }
     }
 }
 
