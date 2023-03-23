@@ -57,6 +57,7 @@ public class brtest  implements CommandLineRunner {
     public void run(String... args) throws Exception{
 
         Scanner scanner = new Scanner(System.in);
+
         System.out.println("캘린더 행 입력 : ");
         int rowInput = scanner.nextInt();
         System.out.println("캘린더 열 입력 : ");
@@ -65,7 +66,6 @@ public class brtest  implements CommandLineRunner {
         SetRowCols(rowInput, colInput);
         process();
     }
-
 
     private WebDriver _WebDriver;
     private WebDriverWait _WebDriverWait;
@@ -105,7 +105,7 @@ public class brtest  implements CommandLineRunner {
 
         // 팝업창 다 닫깅
         closePopup();
-        _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated((By.className("__kakao"))));
+        _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("__kakao")));
         _WebDriver.findElement(By.className("__kakao")).click();
 
         // 명시적 대기 구현  *너무 복잡하게한거같기도하고..
@@ -117,12 +117,13 @@ public class brtest  implements CommandLineRunner {
             }
             catch(InterruptedException e){
                 e.printStackTrace();
+                System.out.println("으안ㄹ미ㅓㅣㅏㄴㄹ어ㅣㄹ나어ㅣㅏㄴㅁㄹ어ㅣㅏㄴㅁㄹㅇ");
             }
             check = handlePopup();
         }
 
         // 이제부터 카카오로그인 팝업창
-        _Sleeper.sleep(Second(10));
+        //_Sleeper.sleep(Second(10));
         // 로그인 입력창이 클릭 가능할때 까지(be enabled) 명시적 대기
         _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("loginKey--1")));
         _WebDriver.findElement(By.id("loginKey--1")).sendKeys(BRSEO_id_kakao);
@@ -168,7 +169,10 @@ public class brtest  implements CommandLineRunner {
         _WebDriver.findElement(By.xpath(GetCalenderXPath(_TargetRow, _TargetCol))).click();
         List<WebElement> availableTimes =_WebDriver.findElements(By.className("timetable-list-item"));
 
-        _WebDriver.findElement(By.linkText("오후 7:45")).getAccessibleName();
+        System.out.println("전");
+        _WebDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(text(), '오후 7:15')]")));
+        _WebDriver.findElement(By.xpath("//span[contains(text(),'오후 7:15')]")).click();
+        System.out.println("후");
 
         //_WebDriver.findElement(By.)
 
