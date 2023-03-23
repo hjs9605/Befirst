@@ -63,10 +63,7 @@ public class brtest  implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception{
         Scanner scanner = new Scanner(System.in);
-        /**
-         * @implNote
-         * 자꾸 행열 입력해서 화났음 -병렬
-         */
+        // 자꾸 행열 입력해야해서 화났음
         boolean debugging = true;
 
         if(debugging){
